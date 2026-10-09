@@ -3,12 +3,7 @@ import {faker} from '@faker-js/faker'
 import User from '../models/User';
 import TodoApi from '../apis/ToDoAPI';
 test('should be able to add a new TODO', async ({page, request, context}) => {
-    const user = new User(
-            faker.person.firstName(),
-            faker.person.lastName(),
-            faker.internet.email(),
-            'Test#1234'
-        );
+    const user = new User();
 
     const response = await request.post('/api/v1/users/register', {
         data: user
@@ -57,12 +52,7 @@ test('should be able to add a new TODO', async ({page, request, context}) => {
 })
 
 test('should be able to delete TODO', async ({page, request, context}) => {
-    const user = new User(
-            faker.person.firstName(),
-            faker.person.lastName(),
-            faker.internet.email(),
-            'Test#1234'
-        );
+    const user = new User();
 
     const response = await request.post('/api/v1/users/register', {
         data: user
