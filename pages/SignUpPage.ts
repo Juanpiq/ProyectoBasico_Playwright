@@ -1,5 +1,6 @@
-import { expect, Locator, Page } from "@playwright/test";
+import { APIRequestContext, BrowserContext, expect, Locator, Page } from "@playwright/test";
 import User from "../models/User";
+import UserApi from "../apis/UserApi";
 
 export default class SignUpPage{
     
@@ -58,5 +59,37 @@ export default class SignUpPage{
         await expect(btnSignUp).toBeVisible;
         await btnSignUp.click();
         }
+    
+    async signupUsingApi(request: APIRequestContext, user: User, context:BrowserContext){
+        const response = await new UserApi().signup(request, user)
+        
+            const responseBody = await response.json()
+            const access_token = responseBody.access_token;
+            const firstName = responseBody.firstName;
+            const userID = responseBody.userID;
+
+            user.setAccessToken(access_token);
+            user.setUserId(userID)
+        
+            await context.addCookies([
+                {
+                    name: "access_token",
+                    value: access_token,
+                    url: "https://todo.qacart.com/"
+                },
+        
+                {
+                    name: "firstName",
+                    value: firstName,
+                    url: "https://todo.qacart.com/"
+                },
+        
+                {
+                    name: "userID",
+                    value: userID,
+                    url: "https://todo.qacart.com/"
+                }
+            ])
+    }
 }
 

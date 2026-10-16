@@ -3,45 +3,13 @@ import {faker} from '@faker-js/faker'
 import User from '../models/User';
 import TodoApi from '../apis/ToDoAPI';
 import UserApi from '../apis/UserApi';
+import SignUpPage from '../pages/SignUpPage';
 test('should be able to add a new TODO', async ({page, request, context}) => {
     const user = new User();
 
-    const response = await new UserApi().signup(request, user)
-
-    const responseBody = await response.json()
-    const access_token = responseBody.access_token;
-    const firstName = responseBody.firstName;
-    const userID = responseBody.userID;
-
-    await context.addCookies([
-        {
-            name: "access_token",
-            value: access_token,
-            url: "https://todo.qacart.com/"
-        },
-
-        {
-            name: "firstName",
-            value: firstName,
-            url: "https://todo.qacart.com/"
-        },
-
-        {
-            name: "userID",
-            value: userID,
-            url: "https://todo.qacart.com/"
-        }
-    ])
-
-    /*await page.goto('/signup');
-    await page.getByTestId('first-name').fill(faker.person.firstName());
-    await page.getByTestId('last-name').fill(faker.person.lastName());
-    await page.getByTestId('email').fill(faker.internet.email());
-    await page.getByTestId('password').fill('Test1234');
-    await page.getByTestId('confirm-password').fill('Test1234');
-    await page.getByTestId('submit').click();
-    await expect(page.getByTestId('welcome')).toBeVisible(); */
-
+    const signupPage = new SignUpPage()
+    await signupPage.signupUsingApi(request, user, context)
+    
     await page.goto('/todo/new')
     await page.getByTestId('new-todo').fill('Learn Playwright!');
     await page.getByTestId('submit-newTask').click();
@@ -52,39 +20,8 @@ test('should be able to add a new TODO', async ({page, request, context}) => {
 
 test('should be able to delete TODO', async ({page, request, context}) => {
     const user = new User();
-
-    const response = await request.post('/api/v1/users/register', {
-        data: user
-    })
-
-    const responseBody = await response.json()
-    const access_token = responseBody.access_token;
-    const firstName = responseBody.firstName;
-    const userID = responseBody.userID;
-
-    user.setAccessToken(access_token);
-    user.setUserId(userID)
-
-    await context.addCookies([
-        {
-            name: "access_token",
-            value: access_token,
-            url: "https://todo.qacart.com/"
-        },
-
-        {
-            name: "firstName",
-            value: firstName,
-            url: "https://todo.qacart.com/"
-        },
-
-        {
-            name: "userID",
-            value: userID,
-            url: "https://todo.qacart.com/"
-        }
-    ])
-
+    const signupPage = new SignUpPage()
+    await signupPage.signupUsingApi(request, user, context)
     await new TodoApi().addTodo(request, user);
 
     await page.goto('/todo')
