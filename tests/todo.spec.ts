@@ -2,12 +2,11 @@ import {test, expect, Locator} from '@playwright/test'
 import {faker} from '@faker-js/faker'
 import User from '../models/User';
 import TodoApi from '../apis/ToDoAPI';
+import UserApi from '../apis/UserApi';
 test('should be able to add a new TODO', async ({page, request, context}) => {
     const user = new User();
 
-    const response = await request.post('/api/v1/users/register', {
-        data: user
-    })
+    const response = await new UserApi().signup(request, user)
 
     const responseBody = await response.json()
     const access_token = responseBody.access_token;

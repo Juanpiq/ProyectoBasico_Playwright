@@ -1,6 +1,7 @@
 import {test, expect, Locator} from "@playwright/test";
 import User from "../models/User";
 import SignUpPage from "../pages/SignUpPage";
+import TodoPage from "../pages/ToDoPage";
 
 test('should be able to register our app', async ({page}) =>{
     const user = new User();
@@ -10,5 +11,9 @@ test('should be able to register our app', async ({page}) =>{
     await signupPage.load(page);
     await signupPage.signup(page, user);
 
-    await expect(page.getByTestId('welcome')).toBeVisible();
+    const todoPage = new TodoPage();
+
+    const welcomeMessage = todoPage.welcomeMessageElement(page);
+
+    await expect(welcomeMessage).toBeVisible();
 })
