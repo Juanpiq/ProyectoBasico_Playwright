@@ -1,20 +1,19 @@
 import {test, expect, Locator} from '@playwright/test'
-import {faker} from '@faker-js/faker'
 import User from '../models/User';
 import TodoApi from '../apis/ToDoAPI';
-import UserApi from '../apis/UserApi';
 import SignUpPage from '../pages/SignUpPage';
+import NewTodoPage from '../pages/NewTodoPage';
 test('should be able to add a new TODO', async ({page, request, context}) => {
     const user = new User();
 
     const signupPage = new SignUpPage()
     await signupPage.signupUsingApi(request, user, context)
     
-    await page.goto('/todo/new')
-    await page.getByTestId('new-todo').fill('Learn Playwright!');
-    await page.getByTestId('submit-newTask').click();
+    const newTodoPage = new NewTodoPage()
+    newTodoPage.load(page);
+    newTodoPage.addTodo(page,'Learn Playwright!')
 
-    const todoItem: Locator = page.getByTestId('todo-item')
+    const todoItem = await newTodoPage.todoItem(page)
     expect(await todoItem.innerText()).toEqual('Learn Playwright!');
 })
 
@@ -22,7 +21,9 @@ test('should be able to delete TODO', async ({page, request, context}) => {
     const user = new User();
     const signupPage = new SignUpPage()
     await signupPage.signupUsingApi(request, user, context)
-    await new TodoApi().addTodo(request, user);
+    
+    const newTodoPage = new NewTodoPage()
+    await newTodoPage.addTodoUsingAPi(request, user)
 
     await page.goto('/todo')
     const deleteItem: Locator = page.getByTestId('delete');
